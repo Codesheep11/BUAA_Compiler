@@ -22,7 +22,7 @@ public class Compiler {
         //frontend
         try {
             changeSystemOutToFile("output.txt");
-//            changeSystemErrToFile("error.txt");
+            changeSystemErrToFile("error.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }

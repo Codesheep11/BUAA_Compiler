@@ -18,6 +18,7 @@ import midend.ir.values.instructions.binary.Icmp;
 import midend.ir.values.instructions.memory.*;
 import midend.ir.values.instructions.terminator.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static midend.pass.Pass.pass;
@@ -31,6 +32,8 @@ public class Codegen {
     private MipsBlock curMB;
     public static HashMap<Function, MipsFunction> f2mf = new HashMap<>();
     public static HashMap<BasicBlock, MipsBlock> b2mb = new HashMap<>();
+
+    public ArrayList<BasicBlock> genArray;
 
 
     public Codegen(Module module) {
@@ -60,6 +63,7 @@ public class Codegen {
         }
         program.addFunction(curMF);
 
+        genArray = function.genBFSArray();
         for (BasicBlock bb : function.genBFSArray()) {
             curMB = new MipsBlock(bb);
             inherit();
@@ -298,6 +302,11 @@ public class Codegen {
     }
 
     private void buildRet(Ret ret) {
+        if (curMF.isMain()) {
+            curMB.addInstr(new InstrL(phyReg(2), new Imm(10), curMB));
+            curMB.addInstr(new Syscall(curMB));
+            return;
+        }
         if (!ret.isVoid()) {
             if (ret.getReturnVal() instanceof ConstantInt) {
                 int val = ((ConstantInt) ret.getReturnVal()).getVal();
@@ -307,15 +316,9 @@ public class Codegen {
                 curMB.addInstr(new Move(phyReg(2), value2VirReg(ret.getReturnVal()), curMB));
             }
         }
-        if (curMF.isMain()) {
-            curMB.addInstr(new InstrL(phyReg(2), new Imm(10), curMB));
-            curMB.addInstr(new Syscall(curMB));
-        }
-        else {
-            InstrJ r = new InstrJ(InstrJ.JType.jr, null, curMB);
-            curMF.getStackFp().rets.add(r);
-            curMB.addInstr(r);
-        }
+        InstrJ r = new InstrJ(InstrJ.JType.jr, null, curMB);
+        curMF.getStackFp().rets.add(r);
+        curMB.addInstr(r);
     }
 
     private void buildAlloc(Alloca alloca) {

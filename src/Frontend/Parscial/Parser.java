@@ -95,7 +95,8 @@ public class Parser {
         Decl decl;
         if (isConstDecl()) {
             decl = new Decl(parseConstDecl());
-        } else {
+        }
+        else {
             decl = new Decl(parseVarDecl());
         }
         try {
@@ -165,7 +166,8 @@ public class Parser {
         try {
             if (curST.check(ident.getWord())) {
                 throw new MyError(ident.getLine(), MyError.ErrorType.B);
-            } else {
+            }
+            else {
                 curST.insert(new Symbol(constDef));
             }
             printData("ConstDef");
@@ -191,7 +193,8 @@ public class Parser {
             assert cur.isRBRACE();
             printData("ConstInitVal");
             return new ConstInitVal(constInitVals);
-        } else {
+        }
+        else {
             ConstExp constExp = parseConstExp();
             printData("ConstInitVal");
             return new ConstInitVal(constExp);
@@ -240,13 +243,15 @@ public class Parser {
             getNext();
             InitVal initVal = parseInitVal();
             varDef = new VarDef(ident, constExps, initVal);
-        } else {
+        }
+        else {
             varDef = new VarDef(ident, constExps);
         }
         try {
             if (curST.check(ident.getWord())) {
                 throw new MyError(ident.getLine(), MyError.ErrorType.B);
-            } else {
+            }
+            else {
                 curST.insert(new Symbol(varDef));
             }
             printData("VarDef");
@@ -272,7 +277,8 @@ public class Parser {
             assert cur.isRBRACE();
             printData("InitVal");
             return new InitVal(initVals);
-        } else {
+        }
+        else {
             Exp exp = parseExp();
             printData("InitVal");
             return new InitVal(exp);
@@ -295,7 +301,8 @@ public class Parser {
         try {
             if (curST.check(ident.getWord())) {
                 throw new MyError(ident.getLine(), MyError.ErrorType.B);
-            } else {
+            }
+            else {
                 curST.insert(new Symbol(funcDef));
             }
         } catch (MyError e) {
@@ -308,7 +315,8 @@ public class Parser {
                 FuncFParams funcFParams = parseFuncFParams();
                 funcDef.setFuncFParams(funcFParams);
                 getNext();
-            } else {
+            }
+            else {
                 try {
                     if (!cur.isRPARENT()) {
                         throw new MyError(getLast().getLine(), MyError.ErrorType.J);
@@ -420,14 +428,16 @@ public class Parser {
                 }
             }
             fp = new FuncFParam(bType, ident, constExps);
-        } else {
+        }
+        else {
             fp = new FuncFParam(bType, ident);
         }
 
         try {
             if (curST.check(ident.getWord())) {
                 throw new MyError(ident.getLine(), MyError.ErrorType.B);
-            } else {
+            }
+            else {
                 curST.insert(new Symbol(fp));
             }
         } catch (MyError e) {
@@ -447,7 +457,8 @@ public class Parser {
         }
         try {
             if (curST.isIntFunc() &&
-                    (blockItems.size() <= 0 || !(blockItems.get(blockItems.size() - 1).isReturn()))) {
+                    (blockItems.size() <= 0 || !(blockItems.get(blockItems.size() - 1).isReturn())))
+            {
                 throw new MyError(cur.getLine(), MyError.ErrorType.G);
             }
         } catch (MyError e) {
@@ -467,7 +478,8 @@ public class Parser {
     private BlockItem parseBlockItem() {
         if (isDecl()) {
             return new BlockItem(parseDecl());
-        } else {
+        }
+        else {
             return new BlockItem(parseStmt());
         }
     }
@@ -478,7 +490,8 @@ public class Parser {
             Word p = tokens.get(i);
             if (p.isASSIGN() && p.getLine() == line) {
                 return true;
-            } else if (p.isSEMICN() || p.getLine() > line) {
+            }
+            else if (p.isSEMICN() || p.getLine() > line) {
                 return false;
             }
         }
@@ -512,10 +525,12 @@ public class Parser {
                     getNext();
                     Stmt stmt2 = parseStmt();
                     stmt = new StmtIf(cond, stmt1, stmt2);
-                } else {
+                }
+                else {
                     stmt = new StmtIf(cond, stmt1);
                 }
-            } else if (cur.isFORTK()) {
+            }
+            else if (cur.isFORTK()) {
                 parseForing++;
                 getNext();
 
@@ -546,14 +561,16 @@ public class Parser {
 
                 stmt = new StmtFor(format, cond, format2, stmt1);
                 parseForing--;
-            } else {
+            }
+            else {
                 curST = new SymbolTable(curST, SymbolTable.STtype.Stmt, "stmt" + stmtcnt);
                 stmtcnt++;
                 Block block = parseBlock();
                 curST = curST.getPreS();
                 stmt = new StmtBlock(block);
             }
-        } else {
+        }
+        else {
             if (cur.isRETURNTK()) {
                 getNext();
                 if (!cur.isSEMICN()) {
@@ -567,10 +584,12 @@ public class Parser {
                     Exp exp = parseExp();
                     getNext();
                     stmt = new StmtReturn(exp);
-                } else {
+                }
+                else {
                     stmt = new StmtReturn();
                 }
-            } else if (cur.isBREAKTK() || cur.isCONTINUETK()) {
+            }
+            else if (cur.isBREAKTK() || cur.isCONTINUETK()) {
                 try {
                     if (parseForing == 0)
                         throw new MyError(cur.getLine(), MyError.ErrorType.M);
@@ -579,7 +598,8 @@ public class Parser {
                 }
                 stmt = new StmtBC(cur);
                 getNext();
-            } else if (cur.isPRINTFTK()) {
+            }
+            else if (cur.isPRINTFTK()) {
                 getNext();
                 getNext();
                 Word format = cur;
@@ -609,7 +629,8 @@ public class Parser {
                 } catch (MyError e) {
                     e.gather();
                 }
-            } else {
+            }
+            else {
                 if (cur.isIDENFR() && LineContainsAssign()) {
                     LVal lVal = parseLval();
 
@@ -630,17 +651,20 @@ public class Parser {
                         getNext();
 
                         stmt = new StmtGetint(lVal);
-                    } else {
+                    }
+                    else {
                         Exp exp = parseExp();
                         getNext();
 
                         stmt = new StmtAssign(lVal, exp);
                     }
 
-                } else {
+                }
+                else {
                     if (cur.isSEMICN()) {
                         stmt = new StmtAssign();
-                    } else {
+                    }
+                    else {
                         Exp exp = parseExp();
                         getNext();
 
@@ -726,12 +750,14 @@ public class Parser {
 
             printData("PrimaryExp");
             return new PrimaryExp(exp);
-        } else if (cur.isIDENFR()) {
+        }
+        else if (cur.isIDENFR()) {
             LVal lVal = parseLval();
 
             printData("PrimaryExp");
             return new PrimaryExp(lVal);
-        } else {
+        }
+        else {
             Number number = parseNumber();
 
             printData("PrimaryExp");
@@ -752,7 +778,8 @@ public class Parser {
             boolean ec = false;
             try {
                 if (!curST.find(ident.getWord()) ||
-                        (curST.find(ident.getWord()) && !curST.getSymbol(ident.getWord()).isFunc())) {
+                        (curST.find(ident.getWord()) && !curST.getSymbol(ident.getWord()).isFunc()))
+                {
                     throw new MyError(ident.getLine(), MyError.ErrorType.C);
                 }
             } catch (MyError e) {
@@ -762,29 +789,31 @@ public class Parser {
             getNext();
             getNext();
             UnaryExp unaryExp;
+            FuncRParams funcRParams;
             if (isExp()) {
-                FuncRParams funcRParams = parseFuncRParams();
+                funcRParams = parseFuncRParams();
                 getNext();
-                if (!ec)
-                    try {
-                        ArrayList<Exp> exps = funcRParams.getExps();
-                        ArrayList<FuncFParam> fps = curST.getSymbol(ident.getWord()).getFuncFParams();
-                        if (exps.size() != fps.size()) {
-                            throw new MyError(ident.getLine(), MyError.ErrorType.D);
-                        }
-                        int size = exps.size();
-                        for (int i = 0; i < size; i++) {
-                            if (fps.get(i).getDataType() != exps.get(i).getDataType()) {
-                                throw new MyError(ident.getLine(), MyError.ErrorType.E);
-                            }
-                        }
-                    } catch (MyError e) {
-                        e.gather();
-                    }
-                unaryExp = new UnaryExp(ident, funcRParams);
-            } else {
-                unaryExp = new UnaryExp(ident, new FuncRParams(new ArrayList<>()));
             }
+            else {
+                funcRParams = new FuncRParams(new ArrayList<>());
+            }
+            if (!ec)
+                try {
+                    ArrayList<Exp> exps = funcRParams.getExps();
+                    ArrayList<FuncFParam> fps = curST.getSymbol(ident.getWord()).getFuncFParams();
+                    if (exps.size() != fps.size()) {
+                        throw new MyError(ident.getLine(), MyError.ErrorType.D);
+                    }
+                    int size = exps.size();
+                    for (int i = 0; i < size; i++) {
+                        if (fps.get(i).getDataType() != exps.get(i).getDataType()) {
+                            throw new MyError(ident.getLine(), MyError.ErrorType.E);
+                        }
+                    }
+                } catch (MyError e) {
+                    e.gather();
+                }
+            unaryExp = new UnaryExp(ident, funcRParams);
             try {
                 if (!cur.isRPARENT()) {
                     tokenInsertRPARENT();
@@ -797,14 +826,16 @@ public class Parser {
             printData("UnaryExp");
             return unaryExp;
 
-        } else if (isUnaryOp()) {
+        }
+        else if (isUnaryOp()) {
             UnaryOp unaryOp = parseUnaryOp();
             getNext();
             UnaryExp unaryExp = parseUnaryExp();
 
             printData("UnaryExp");
             return new UnaryExp(unaryOp, unaryExp);
-        } else {
+        }
+        else {
             PrimaryExp primaryExp = parsePrimaryExp();
 
             printData("UnaryExp");
@@ -948,7 +979,8 @@ public class Parser {
         if (cur.isPLUS() || cur.isMINU() || cur.isNOT()
                 || cur.isIDENFR()
                 || cur.isLPARENT()
-                || cur.isINTCON()) {
+                || cur.isINTCON())
+        {
             return true;
         }
         return false;
@@ -956,7 +988,8 @@ public class Parser {
 
     private boolean isFuncDef() {
         if ((cur.isINTTK() || cur.isVOIDTK()) &&
-                (preRead().isIDENFR() && tokens.get(index + 2).isLPARENT())) {
+                (preRead().isIDENFR() && tokens.get(index + 2).isLPARENT()))
+        {
             return true;
         }
         return false;
@@ -988,7 +1021,8 @@ public class Parser {
                 && (tokens.get(index + 2).isLBRACK()
                 || tokens.get(index + 2).isASSIGN()
                 || tokens.get(index + 2).isSEMICN()
-                || tokens.get(index + 2).isCOMMA())) {
+                || tokens.get(index + 2).isCOMMA()))
+        {
             return true;
         }
         return false;
